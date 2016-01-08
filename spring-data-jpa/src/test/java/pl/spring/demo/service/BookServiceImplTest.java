@@ -1,9 +1,11 @@
 package pl.spring.demo.service;
 
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import pl.spring.demo.exception.BookNotNullIdException;
@@ -19,6 +21,13 @@ public class BookServiceImplTest {
 
     @Autowired
     private BookService bookService;
+    @Autowired
+    private CacheManager cacheManager;
+
+    @Before
+    public void setUp() {
+        cacheManager.getCache("booksCache").clear();
+    }
 
     @Test
     public void testShouldFindAllBooks() {

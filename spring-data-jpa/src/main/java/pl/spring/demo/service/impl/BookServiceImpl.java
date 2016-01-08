@@ -1,5 +1,6 @@
 package pl.spring.demo.service.impl;
 
+import org.springframework.cache.annotation.Cacheable;
 import pl.spring.demo.dao.BookDao;
 import pl.spring.demo.service.BookService;
 import pl.spring.demo.to.BookTo;
@@ -11,6 +12,7 @@ public class BookServiceImpl implements BookService {
     private BookDao bookDao;
 
     @Override
+    @Cacheable("booksCache")
     public List<BookTo> findAllBooks() {
         return bookDao.findAll();
     }
