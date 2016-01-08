@@ -1,24 +1,17 @@
 package pl.spring.demo.mock;
-/**
- * @COPYRIGHT (C) 2015 Schenker AG
- *
- * All rights reserved
- */
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import pl.spring.demo.dao.BookDao;
 import pl.spring.demo.service.impl.BookServiceImpl;
 import pl.spring.demo.to.BookTo;
 
 import static org.junit.Assert.assertEquals;
 
-/**
- * TODO The class BookServiceImplTest is supposed to be documented...
- *
- * @author AOTRZONS
- */
 public class BookServiceImplTest {
 
     @InjectMocks
@@ -27,7 +20,7 @@ public class BookServiceImplTest {
     private BookDao bookDao;
 
     @Before
-    public void setUpt() {
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
     }
 
