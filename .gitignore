@@ -5,7 +5,7 @@ dist
 test
 .idea/
 *.iml
-java/target
+target
 .settings
 .project
 .sonar
