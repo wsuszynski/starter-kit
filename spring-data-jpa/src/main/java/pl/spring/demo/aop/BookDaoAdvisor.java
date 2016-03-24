@@ -1,26 +1,49 @@
 package pl.spring.demo.aop;
 
 
-import org.springframework.aop.MethodBeforeAdvice;
+import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import pl.spring.demo.annotation.NullableId;
-import pl.spring.demo.exception.BookNotNullIdException;
+import pl.spring.demo.exception.EntityNotNullIdException;
 import pl.spring.demo.to.IdAware;
+import pl.spring.demo.common.Sequence;
+import pl.spring.demo.dao.Dao;
 
 import java.lang.reflect.Method;
 
-public class BookDaoAdvisor implements MethodBeforeAdvice {
+@Aspect
+@Component
+public class BookDaoAdvisor {
 
-    @Override
-    public void before(Method method, Object[] objects, Object o) throws Throwable {
-
-        if (hasAnnotation(method, o, NullableId.class)) {
+	@Autowired
+	private Sequence sequence;
+	
+	@Before("@annotation(pl.spring.demo.annotation.NullableId)")
+	public void before(JoinPoint jp) throws Throwable {
+		Object o = jp.getTarget();
+		Object[] objects = jp.getArgs();
+		MethodSignature ms = (MethodSignature) jp.getSignature();
+		Method method = ms.getMethod();
+		if (hasAnnotation(method, o, NullableId.class)) {
             checkNotNullId(objects[0]);
+            assignId(objects[0], o);
         }
     }
 
     private void checkNotNullId(Object o) {
         if (o instanceof IdAware && ((IdAware) o).getId() != null) {
-            throw new BookNotNullIdException();
+            throw new EntityNotNullIdException();
+        }
+    }
+    
+    private void assignId(Object o, Object dao) {
+    	if (o instanceof IdAware) {
+    		((IdAware) o).setId(sequence.nextValue(((Dao<?>) dao).findAll()));
         }
     }
 
@@ -31,5 +54,9 @@ public class BookDaoAdvisor implements MethodBeforeAdvice {
             hasAnnotation = o.getClass().getMethod(method.getName(), method.getParameterTypes()).getAnnotation(annotationClazz) != null;
         }
         return hasAnnotation;
+    }
+    
+    public void setSequence(Sequence sequence) {
+    	this.sequence = sequence;
     }
 }
